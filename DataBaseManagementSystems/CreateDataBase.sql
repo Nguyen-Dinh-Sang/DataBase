@@ -1,0 +1,113 @@
+﻿USE master
+GO
+
+DROP DATABASE QLDDH_NguyenDinhSang
+GO
+
+CREATE DATABASE QLDDH_NguyenDinhSang
+GO
+
+USE QLDDH_NguyenDinhSang
+GO
+
+--
+CREATE TABLE KhachHang(
+	MaKH VARCHAR(10) PRIMARY KEY,
+	TenKH NVARCHAR(100),
+	DiaChi NVARCHAR(100),
+	DienThoai VARCHAR(20)
+)
+GO
+
+CREATE TABLE DonDatHang(
+	MaDat VARCHAR(10) PRIMARY KEY,
+	NgayDat DATE,
+	MaKH VARCHAR(10),
+	TinhTrang INT DEFAULT 0,
+	CONSTRAINT DonDatHang_KhachHang
+	FOREIGN KEY(MaKH)
+	REFERENCES dbo.KhachHang(MaKH)
+)
+GO
+
+CREATE TABLE PhieuGiaoHang(
+	MaGiao VARCHAR(10) PRIMARY KEY,
+	NgayGiao DATE,
+	MaDat VARCHAR(10),
+	CONSTRAINT PhieuGiaoHang_DonDatHang
+	FOREIGN KEY(MaDat)
+	REFERENCES dbo.DonDatHang(MaDat)
+)
+GO
+
+CREATE TABLE HangHoa(
+	MaHH VARCHAR(10) PRIMARY KEY,
+	TenHH NVARCHAR(100),
+	DVT NVARCHAR(100),
+	SLCon INT,
+	DonGiaHH INT
+)
+GO
+
+CREATE TABLE ChiTietDatHang(
+	MaDat VARCHAR(10),
+	MaHH VARCHAR(10),
+	SLDat INT,
+	CONSTRAINT ChiTietDatHangPK PRIMARY KEY(MaDat, MaHH),
+	CONSTRAINT ChiTietDatHang_DonDatHang
+	FOREIGN KEY(MaDat)
+	REFERENCES dbo.DonDatHang(MaDat),
+	CONSTRAINT ChiTietDatHang_HangHoa
+	FOREIGN KEY(MaHH)
+	REFERENCES dbo.HangHoa(MaHH)
+)
+GO
+
+CREATE TABLE LichSuGia(
+	MaHH VARCHAR(10),
+	NgayHL DATE DEFAULT GETDATE(),
+	DonGia INT,
+	CONSTRAINT LichSuGiaPK PRIMARY KEY(MaHH, NgayHL),
+	CONSTRAINT LichSuGia_HangHoa
+	FOREIGN KEY(MaHH)
+	REFERENCES dbo.HangHoa(MaHH)
+)
+GO
+
+CREATE TABLE ChiTietGiaoHang(
+	MaGiao VARCHAR(10),
+	MaHH VARCHAR(10),
+	SLGiao INT,
+	DonGiaGiao INT,
+	CONSTRAINT ChiTietGiaoHangPK PRIMARY KEY(MaGiao, MaHH),
+	CONSTRAINT ChiTietGiaoHang_Hanghoa
+	FOREIGN KEY(MaHH)
+	REFERENCES dbo.HangHoa(MaHH),
+	CONSTRAINT ChiTietGiaoHang_PhieuGiaoHang
+	FOREIGN KEY(MaGiao)
+	REFERENCES dbo.PhieuGiaoHang(MaGiao)
+)
+GO
+
+--Kiểm tra kết quả
+SELECT *
+FROM HangHoa
+
+SELECT *
+FROM KhachHang
+
+SELECT *
+FROM LichSuGia
+
+SELECT *
+FROM DonDatHang
+
+SELECT *
+FROM PhieuGiaoHang
+
+SELECT *
+FROM ChiTietDatHang
+
+SELECT *
+FROM ChiTietGiaoHang
+GO
